@@ -35,16 +35,16 @@ export default class Router {
                 routeparts = route.split(this.separator),
                 routeformat = routeparts.map((part, index) => {
                     if (!part)
-                        return '';
+                        return !index ? this.separator : '';
                     if (part === "*")
                         return joker;
                     if (part.charAt(0) === ':') {
                         const varname = part.slice(1);
                         vars[varname] = pathparts[index];
-                        return joker;
+                        return '[\\' + this.separator + ']?' + joker;
                     }
                     return part;
-                }).join(this.separator),
+                }).join(''),
                 route_re = new RegExp(`^${routeformat}$`),
                 match = route_re.test(this.path);
             if (match) {
@@ -58,8 +58,8 @@ export default class Router {
         const // 
             routeparams = this.routes[this.match],
             output = isFunc(routeparams) ? routeparams(this.vars) : routeparams,
-            outputWithVars = { ...this.vars, ...output,route_vars: this.vars,path:this.path,separator:this.separator,route:this.match };
-            this.ouput = outputWithVars;
+            outputWithVars = { ...this.vars, ...output, route_vars: this.vars, path: this.path, separator: this.separator, route: this.match };
+        this.ouput = outputWithVars;
 
 
         return this.ouput;
